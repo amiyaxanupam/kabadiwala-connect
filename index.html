@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kabadiwala Connect | Operations Portal</title>
+    <!-- Icons via FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --dark: #0f172a;
+            --card-bg: #ffffff;
+            --gray-bg: #f8fafc;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray-bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 270px;
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand i {
+            color: var(--primary);
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .nav-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.05rem;
+            margin: 1.2rem 0 0.5rem 0.8rem;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: #ecfdf5;
+            color: var(--primary-dark);
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        /* Language Selector in Sidebar */
+        .lang-box {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .lang-box label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .lang-box select {
+            width: 100%;
+            margin-top: 0.3rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            outline: none;
+        }
+
+        /* Main Workspace */
+        main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-bar h1 {
+            font-size: 1.6rem;
+            color: var(--dark);
+        }
+
+        /* Collector Selection Controls in Header */
+        .collector-selector-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .collector-selector-wrap label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .collector-dropdown {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--dark);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Metric Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            padding: 1.3rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .metric-card span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .metric-card h3 {
+            font-size: 1.6rem;
+            color: var(--dark);
+            margin-top: 0.3rem;
+        }
+
+        /* Layout Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.15rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.65rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.65rem 1.2rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .btn-green { background: var(--primary); color: #fff; }
+        .btn-green:hover { background: var(--primary-dark); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); }
+
+        /* AI Scanner Box */
+        .ai-scanner-box {
+            border: 2px dashed var(--primary);
+            background: #ecfdf5;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        /* Tables & Lists */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .tag {
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-pending { background: #fef3c7; color: #b45309; }
+        .tag-success { background: #dcfce7; color: #15803d; }
+        .tag-alert { background: #fee2e2; color: #b91c1c; }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media(max-width: 900px) {
+            body { flex-direction: column; }
+            aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside>
+        <div class="brand">
+            <i class="fa-solid fa-recycle"></i> Kabadiwala<span>Connect</span>
+        </div>
+
+        <div class="nav-category">Select Role</div>
+        <button class="nav-btn active" onclick="switchPortal('kabadiwala', this)">
+            <i class="fa-solid fa-truck-ramp-box"></i> Kabadiwala Dashboard
+        </button>
+        <button class="nav-btn" onclick="switchPortal('manage-collectors', this)">
+            <i class="fa-solid fa-users-gear"></i> Manage Collectors
+        </button>
+        <button class="nav-btn" onclick="switchPortal('recycler', this)">
+            <i class="fa-solid fa-industry"></i> Recycler Portal
+        </button>
+        <button class="nav-btn" onclick="switchPortal('admin', this)">
+            <i class="fa-solid fa-shield-halved"></i> Admin Dashboard
+        </button>
+
+        <div class="lang-box">
+            <label><i class="fa-solid fa-language"></i> Accessibility Language</label>
+            <select id="lang-select">
+                <option value="en">English</option>
+                <option value="hi">हिंदी (Hindi)</option>
+                <option value="bn">বাংলা (Bengali)</option>
+            </select>
+        </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main>
+        <!-- KABADIWALA DASHBOARD -->
+        <section id="portal-kabadiwala">
+            <div class="header-bar">
+                <div>
+                    <h1 id="greeting-title">Collector Dashboard</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;" id="active-collector-text">
+                        Namaste, Ramesh Kumar (ID: KAB-8421)
+                    </p>
+                </div>
+                <!-- Dynamic Collector Switcher -->
+                <div class="collector-selector-wrap">
+                    <label for="collector-dropdown-select"><i class="fa-solid fa-user-check"></i> Active Collector:</label>
+                    <select id="collector-dropdown-select" class="collector-dropdown" onchange="changeActiveCollector(this.value)">
+                        <!-- Populated dynamically via JS -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span>Total Collection (Today)</span>
+                    <h3>128 kg</h3>
+                </div>
+                <div class="metric-card">
+                    <span>Today's Earnings</span>
+                    <h3>₹1,840</h3>
+                </div>
+                <div class="metric-card">
+                    <span>Pending Pickups</span>
+                    <h3>3 Requests</h3>
+                </div>
+                <div class="metric-card">
+                    <span>Transactions Done</span>
+                    <h3>14 Completed</h3>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <!-- Add Waste + AI Scanner -->
+                <div class="card">
+                    <h2><i class="fa-solid fa-plus-circle"></i> Add Waste Entry</h2>
+                    
+                    <div class="ai-scanner-box" onclick="triggerAIScanner()">
+                        <i class="fa-solid fa-camera fa-2x" style="color: var(--primary);"></i>
+                        <p style="margin-top: 0.5rem; font-weight: 600;">AI Waste Scanner</p>
+                        <small style="color: var(--text-muted);">Click to simulate photo category & price range scan</small>
+                    </div>
+
+                    <form id="waste-entry-form">
+                        <div class="form-group">
+                            <label>Scrap Category</label>
+                            <select id="waste-cat">
+                                <option value="18">PET Plastic / Bottles</option>
+                                <option value="14">Old Paper / Raddi</option>
+                                <option value="32">Iron / Scrap Metal</option>
+                                <option value="48">E-Waste / Motherboards</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="waste-weight" placeholder="e.g. 15" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estimated Price Range</label>
+                            <input type="text" id="waste-price-range" value="₹18 - ₹22 / kg" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Collection Location</label>
+                            <input type="text" value="Ward 12, Main Market, Giridih" required>
+                        </div>
+                        <button type="submit" class="btn btn-green" style="width: 100%;">Record Collection</button>
+                    </form>
+                </div>
+
+                <!-- Nearby Recycler & Pickups -->
+                <div>
+                    <div class="card">
+                        <h2><i class="fa-solid fa-location-crosshairs"></i> Nearby Authorized Recyclers</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Recycler Plant</th>
+                                    <th>Accepted Waste</th>
+                                    <th>Distance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>GreenLeaf Eco Mills</b></td>
+                                    <td>Paper, Cardboard</td>
+                                    <td>1.8 km</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Apex Polymers Ltd</b></td>
+                                    <td>PET, Hard Plastic</td>
+                                    <td>3.2 km</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Urban Clean Metals</b></td>
+                                    <td>Copper, Iron, Brass</td>
+                                    <td>4.0 km</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <h2><i class="fa-solid fa-clock-rotate-left"></i> Digital Transaction History</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Txn ID</th>
+                                    <th>Material</th>
+                                    <th>Weight</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#TX-904</td>
+                                    <td>Plastic Scrap</td>
+                                    <td>42 kg</td>
+                                    <td><b style="color:var(--primary-dark)">₹756</b></td>
+                                </tr>
+                                <tr>
+                                    <td>#TX-891</td>
+                                    <td>Iron Rods</td>
+                                    <td>65 kg</td>
+                                    <td><b style="color:var(--primary-dark)">₹2,080</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANAGE COLLECTORS TAB -->
+        <section id="portal-manage-collectors" class="hidden">
+            <div class="header-bar">
+                <div>
+                    <h1>Collector Directory & Onboarding</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Add multiple waste collectors, assign IDs or remove obsolete profiles.</p>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <!-- Add New Collector Card -->
+                <div class="card">
+                    <h2><i class="fa-solid fa-user-plus"></i> Register New Collector</h2>
+                    <form id="add-collector-form">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="new-collector-name" placeholder="e.g. Vikas Mahto" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned Zone / Area</label>
+                            <input type="text" id="new-collector-area" placeholder="e.g. Giridih Central, Sector 3" required>
+                        </div>
+                        <button type="submit" class="btn btn-green" style="width: 100%;">
+                            <i class="fa-solid fa-plus"></i> Add Collector
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Collector List Table -->
+                <div class="card">
+                    <h2><i class="fa-solid fa-id-badge"></i> Active Registered Collectors</h2>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Assigned Zone</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="collector-directory-table">
+                                <!-- Populated dynamically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECYCLER VIEW -->
+        <section id="portal-recycler" class="hidden">
+            <div class="header-bar">
+                <div>
+                    <h1>Material Recycler Dashboard</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Facility: GreenLeaf Eco-Recyclers Pvt Ltd</p>
+                </div>
+                <span class="tag tag-success"><i class="fa-solid fa-circle-check"></i> Verified Facility (EPR Certified)</span>
+            </div>
+
+            <div class="card">
+                <h2>
+                    <span><i class="fa-solid fa-truck-moving"></i> Incoming Collector Requests</span>
+                    <div>
+                        <select style="padding: 0.3rem 0.6rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--border);">
+                            <option>All Materials</option>
+                            <option>Plastic Only</option>
+                            <option>Metals Only</option>
+                        </select>
+                    </div>
+                </h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Collector Name</th>
+                            <th>Material</th>
+                            <th>Quantity</th>
+                            <th>Pickup Location</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recycler-incoming-requests">
+                        <tr id="req-row-1">
+                            <td>Ramesh Kumar (KAB-8421)</td>
+                            <td>Hard Plastic / HDPE</td>
+                            <td>55 kg</td>
+                            <td>Sector 4, Central Point</td>
+                            <td>
+                                <button class="btn btn-green" style="padding: 0.3rem 0.7rem;" onclick="approveRequest('req-row-1', 990)">Accept</button>
+                                <button class="btn btn-danger" style="padding: 0.3rem 0.7rem;" onclick="rejectRequest('req-row-1')">Reject</button>
+                            </td>
+                        </tr>
+                        <tr id="req-row-2">
+                            <td>Sunil Soren (KAB-3310)</td>
+                            <td>Corrugated Paper</td>
+                            <td>120 kg</td>
+                            <td>Industrial Area Shed 3</td>
+                            <td>
+                                <button class="btn btn-green" style="padding: 0.3rem 0.7rem;" onclick="approveRequest('req-row-2', 1680)">Accept</button>
+                                <button class="btn btn-danger" style="padding: 0.3rem 0.7rem;" onclick="rejectRequest('req-row-2')">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-receipt"></i> Completed Transaction History & Final Weight Verification</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Batch ID</th>
+                            <th>Collector</th>
+                            <th>Recorded Weight</th>
+                            <th>Final Verified Weight</th>
+                            <th>Total Payout</th>
+                            <th>EPR Certificate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>BATCH-501</td>
+                            <td>Ramesh Kumar</td>
+                            <td>102 kg</td>
+                            <td><b>101.4 kg</b></td>
+                            <td>₹1,825</td>
+                            <td><a href="#" style="color: var(--primary-dark); font-weight:600;"><i class="fa-solid fa-download"></i> Download</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ADMIN VIEW -->
+        <section id="portal-admin" class="hidden">
+            <div class="header-bar">
+                <div>
+                    <h1>Central System Administration</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">State Waste Operations & Surveillance Panel</p>
+                </div>
+            </div>
+
+            <!-- Environmental Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span>Total Diversion From Landfills</span>
+                    <h3 style="color: var(--primary-dark);">438.5 Tons</h3>
+                </div>
+                <div class="metric-card">
+                    <span>Carbon Credits Generated</span>
+                    <h3>1,240 CO₂e</h3>
+                </div>
+                <div class="metric-card">
+                    <span>Active Collectors</span>
+                    <h3 id="admin-collector-count">3 Registered</h3>
+                </div>
+                <div class="metric-card">
+                    <span>Suspicious Alerts</span>
+                    <h3 style="color: var(--danger);">2 Pending</h3>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <!-- Verification Workflow -->
+                <div class="card">
+                    <h2><i class="fa-solid fa-id-card-clip"></i> Recycler Verification Workflow</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Entity</th>
+                                <th>Govt / Factory Lic</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bharat Metals Pvt</td>
+                                <td>LIC-2026-JH-99</td>
+                                <td><span class="tag tag-pending">Under Review</span></td>
+                                <td><button class="btn btn-outline" style="padding: 0.2rem 0.5rem;">Verify</button></td>
+                            </tr>
+                            <tr>
+                                <td>Jamshedpur Polymers</td>
+                                <td>LIC-2025-JH-12</td>
+                                <td><span class="tag tag-success">Approved</span></td>
+                                <td><span style="color: var(--text-muted); font-size: 0.8rem;">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Suspicious Transaction Alerts -->
+                <div class="card">
+                    <h2><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Suspicious Alerts</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Entity Involved</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag tag-alert">Weight Discrepancy</span></td>
+                                <td>Recycler #401 vs Kabadi #12</td>
+                                <td>Difference &gt; 25% recorded</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-alert">Geofence Mismatch</span></td>
+                                <td>Driver #DL-883</td>
+                                <td>Scrap drop outside designated MRF</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-map-location-dot"></i> Live Collection Activity & Area-Wise Analytics</h2>
+                <div style="background: #e2e8f0; height: 180px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <i class="fa-solid fa-earth-asia fa-2x" style="color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                    <p style="font-weight: 600; color: var(--text-main);">Spatial Heatmap Layer Active</p>
+                    <small style="color: var(--text-muted);">Showing hubs operating across Central & North Industrial Sectors</small>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- INTEGRATED JAVASCRIPT LOGIC -->
+    <script>
+        // 1. Dynamic Collectors Store
+        let collectorsList = [
+            { id: "KAB-8421", name: "Ramesh Kumar", area: "Ward 12, Main Market" },
+            { id: "KAB-3310", name: "Sunil Soren", area: "Industrial Area Shed 3" },
+            { id: "KAB-9042", name: "Amit Verma", area: "Sector 4, Central Point" }
+        ];
+
+        let currentActiveCollectorId = "KAB-8421";
+
+        // Render Dropdown and Management Table
+        function refreshCollectorsUI() {
+            const dropdown = document.getElementById('collector-dropdown-select');
+            const directoryTable = document.getElementById('collector-directory-table');
+            const adminCount = document.getElementById('admin-collector-count');
+
+            dropdown.innerHTML = "";
+            directoryTable.innerHTML = "";
+
+            collectorsList.forEach((c) => {
+                // Populate Dropdown
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = `${c.name} (${c.id})`;
+                if (c.id === currentActiveCollectorId) {
+                    opt.selected = true;
+                }
+                dropdown.appendChild(opt);
+
+                // Populate Directory Table
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${c.id}</b></td>
+                    <td>${c.name}</td>
+                    <td>${c.area}</td>
+                    <td>
+                        <button class="btn btn-danger" style="padding: 0.25rem 0.6rem; font-size: 0.8rem;" onclick="deleteCollector('${c.id}')">
+                            <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                    </td>
+                `;
+                directoryTable.appendChild(tr);
+            });
+
+            if (adminCount) {
+                adminCount.textContent = collectorsList.length + " Registered";
+            }
+
+            updateHeaderGreetings();
+        }
+
+        // Switch Active Collector from Dropdown
+        function changeActiveCollector(newId) {
+            currentActiveCollectorId = newId;
+            updateHeaderGreetings();
+        }
+
+        function updateHeaderGreetings() {
+            const activeObj = collectorsList.find(c => c.id === currentActiveCollectorId);
+            if (activeObj) {
+                document.getElementById('active-collector-text').textContent = 
+                    `Namaste, ${activeObj.name} (ID: ${activeObj.id})`;
+            } else if (collectorsList.length > 0) {
+                currentActiveCollectorId = collectorsList[0].id;
+                updateHeaderGreetings();
+            } else {
+                document.getElementById('active-collector-text').textContent = "No active collector selected.";
+            }
+        }
+
+        // Add Collector Form Handler
+        document.getElementById('add-collector-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-collector-name').value.trim();
+            const area = document.getElementById('new-collector-area').value.trim();
+
+            if (!name) return;
+
+            const newId = "KAB-" + Math.floor(1000 + Math.random() * 9000);
+            collectorsList.push({ id: newId, name: name, area: area });
+
+            this.reset();
+            refreshCollectorsUI();
+            alert(`Collector "${name}" successfully registered with ID: ${newId}`);
+        });
+
+        // Delete Collector
+        function deleteCollector(idToDelete) {
+            if (collectorsList.length <= 1) {
+                alert("At least one collector must remain in the directory.");
+                return;
+            }
+
+            if (confirm("Are you sure you want to remove this collector?")) {
+                collectorsList = collectorsList.filter(c => c.id !== idToDelete);
+                if (currentActiveCollectorId === idToDelete) {
+                    currentActiveCollectorId = collectorsList[0].id;
+                }
+                refreshCollectorsUI();
+            }
+        }
+
+        // Switch Tabs/Portals
+        function switchPortal(portalId, clickedBtn) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
+
+            document.getElementById('portal-kabadiwala').classList.add('hidden');
+            document.getElementById('portal-manage-collectors').classList.add('hidden');
+            document.getElementById('portal-recycler').classList.add('hidden');
+            document.getElementById('portal-admin').classList.add('hidden');
+
+            document.getElementById('portal-' + portalId).classList.remove('hidden');
+        }
+
+        // AI Waste Scanner Simulation
+        function triggerAIScanner() {
+            alert('AI Waste Scanner Initializing...\nSensor Connected.\nDetected: High-Density Polyethylene (HDPE Plastic).\nConfidence: 94.2%.\nRecommended Range: ₹18-₹22/kg.');
+            document.getElementById('waste-cat').value = "18";
+            document.getElementById('waste-weight').value = "12";
+        }
+
+        // Scrap Entry Form
+        document.getElementById('waste-entry-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const activeObj = collectorsList.find(c => c.id === currentActiveCollectorId);
+            const name = activeObj ? activeObj.name : "Collector";
+            alert(`Scrap recorded for ${name} and broadcasted to authorized nearby recyclers!`);
+            this.reset();
+        });
+
+        // Recycler Decision Actions
+        function approveRequest(rowId, payout) {
+            const row = document.getElementById(rowId);
+            row.innerHTML = `<td colspan="5" style="color: var(--primary-dark); font-weight: 600; background: #ecfdf5;">
+                <i class="fa-solid fa-check"></i> Accepted! Scheduled for dispatch. Expected Payout: ₹${payout}
+            </td>`;
+        }
+
+        function rejectRequest(rowId) {
+            const row = document.getElementById(rowId);
+            row.style.display = 'none';
+        }
+
+        // Language Accessibility
+        document.getElementById('lang-select').addEventListener('change', function(e) {
+            const lang = e.target.value;
+            if (lang === 'hi') {
+                alert('भाषा बदलकर हिंदी कर दी गई है');
+            } else if (lang === 'bn') {
+                alert('ভাষা পরিবর্তন করে বাংলা করা হয়েছে');
+            } else {
+                alert('Language set to English');
+            }
+        });
+
+        // Initialize UI on load
+        document.addEventListener('DOMContentLoaded', refreshCollectorsUI);
+    </script>
+</body>
+</html>
